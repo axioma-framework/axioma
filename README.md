@@ -33,6 +33,7 @@ Axioma is designed to be agnostic but powered by a high-performance core:
 
 ## 📂 Project Structure
 Project structure overview:
+
 ```text
 /your-project
 ├── .axioma/
