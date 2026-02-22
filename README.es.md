@@ -21,36 +21,29 @@ El desarrollo asistido por IA hoy sufre de "hiper-actividad":
 
 ---
 
-## 🔄 El Flujo Axiomático
+## 🔄 El Flujo Axiomático: Vibe Coding y Autonomía
 
-Axioma no solo "chatea" con el código; ejecuta un estricto protocolo de confianza mediado por agentes especializados:
+Axioma une lo mejor del mundo conversacional interactivo ("Vibe Coding") con el rigor de la ingeniería de software clásica ("Fire and Forget"). Ejecuta un estricto protocolo dividido por una **Frontera de Aprobación Humana**:
 
 ```mermaid
 graph TD
     User([Petición del Usuario]) --> A
     
-    subgraph 1. Fase de Indagación
+    subgraph Fase 1: Vibe Coding (Chatbot Interactivo)
     A[The Archivist] -- MCP --> Repo[(Repositorio)]
-    A -.->|Detectar Ambigüedad| User
-    end
-    
-    subgraph 2. Redacción
+    A -.->|Aclarar Ambigüedad| User
     A --> B[The Blueprint]
     B --> Spec[.spec.md / Ledger]
+    B -.->|Refinar Diseño| User
     end
     
-    subgraph 3. Auditoría
-    Spec --> C{The Censor}
-    C -->|Veto| A
-    end
+    Spec ===>|Frontera de Aprobación Humana| C
     
-    subgraph 4. El Juicio
+    subgraph Fase 2: Fire and Forget (Flujo Autónomo)
+    C{The Censor} -->|Veto| A
     C -->|Aprobado| J[The Justice]
     J --> Tests((Tests))
     Tests -->|Debe Fallar 🔴| M
-    end
-    
-    subgraph 5. Construcción
     M[The Mason] --> Src{src/}
     Src -->|Tests Pasan 🟢| Done([Código Desplegable])
     Src -->|Tests Fallan 🔴| M
@@ -61,8 +54,11 @@ graph TD
 
 Axioma opera mediante una jerarquía de agentes con roles y responsabilidades innegociables:
 
+**🗣️ Los Agentes de Diseño / Chatbot (Fase 1):**
 1.  **The Archivist (El Guardián del Contexto):** Reduce la incertidumbre a cero. Entrevista al usuario, analiza el repositorio mediante MCP y detecta dependencias. No asume; pregunta.
 2.  **The Blueprint (El Arquitecto):** Traduce la intención en un archivo `.spec.md` estructurado y define las fixtures (datos sintéticos).
+
+**🤖 Los Constructores Autónomos (Fase 2):**
 3.  **The Censor (El Auditor):** Posee poder de veto. Rechaza la Spec si es ambigua, si el alcance es demasiado grande o si rompe reglas invariantes del sistema.
 4.  **The Justice (El Juez):** Crea los tests y asegura que fallen (Paso Rojo) antes de permitir cualquier implementación. Es el garante de la verdad.
 5.  **The Mason (El Constructor):** El artesano que implementa el código mínimo necesario para satisfacer a The Justice.

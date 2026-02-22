@@ -21,36 +21,29 @@ AI-assisted development today suffers from "hyper-activity":
 
 ---
 
-## 🔄 The Axiomatic Flow
+## 🔄 The Axiomatic Flow: Vibe Coding meets Autonomy
 
-Axioma doesn't just "chat" with code; it executes a strict trust protocol mediated by specialized agents:
+Axioma bridges the gap between conversational brainstorming ("Vibe Coding") and strict software engineering ("Fire and Forget"). It executes a strict trust protocol mediated by specialized agents and divided by a critical **Human Approval Boundary**:
 
 ```mermaid
 graph TD
     User([User Request]) --> A
     
-    subgraph 1. Inquiry Phase
+    subgraph Phase 1: Vibe Coding (Interactive Chatbot)
     A[The Archivist] -- MCP --> Repo[(Repository)]
     A -.->|Ask & Clarify| User
-    end
-    
-    subgraph 2. Drafting
     A --> B[The Blueprint]
     B --> Spec[.spec.md / Ledger]
+    B -.->|Draft & Refine| User
     end
     
-    subgraph 3. Audit
-    Spec --> C{The Censor}
-    C -->|Veto| A
-    end
+    Spec ===>|Human Approval Boundary| C
     
-    subgraph 4. The Trial
-    C -->|Approve| J[The Justice]
+    subgraph Phase 2: Fire and Forget (Autonomous Flow)
+    C{The Censor} -->|Veto| A
+    C -->|Approved| J[The Justice]
     J --> Tests((Tests))
     Tests -->|Must Fail 🔴| M
-    end
-    
-    subgraph 5. Construction
     M[The Mason] --> Src{src/}
     Src -->|Tests Pass 🟢| Done([Deployable Code])
     Src -->|Tests Fail 🔴| M
@@ -61,8 +54,11 @@ graph TD
 
 Axioma operates through a hierarchy of agents with non-negotiable roles and honors:
 
+**🗣️ The Chatbot / Design Agents (Phase 1):**
 1.  **The Archivist (The Context Guardian):** Reduces uncertainty to zero. Interviews the user, analyzes the repository via MCP, and detects dependencies. It doesn't assume; it asks.
 2.  **The Blueprint (The Architect):** Translates intent into a structured `.spec.md` file and defines the fixtures (synthetic data).
+
+**🤖 The Autonomous Builders (Phase 2):**
 3.  **The Censor (The Auditor):** Holds veto power. Rejects the Spec if it is ambiguous, if the scope is too large, or if it breaks system invariants.
 4.  **The Justice (The Judge):** Creates the tests and ensures they fail (Red Step) before allowing any implementation. It is the guarantor of truth.
 5.  **The Mason (The Builder):** The artisan who implements the minimum code necessary to satisfy The Justice.
