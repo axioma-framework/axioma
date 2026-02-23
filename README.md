@@ -13,6 +13,23 @@ Axioma is an architectural framework and methodology designed to transform AI ag
 
 ---
 
+## 💥 Why Axioma?
+
+If you've iterated on a project using Vibe Coding, you've probably experienced this: you ask an AI agent to add a new feature, and it silently **modifies or breaks** features that were already working. The agent has no memory of the system's contracts — it sees code and charges forward.
+
+**That is the problem Axioma was built to solve.**
+
+With Axioma, you don't talk to code — you **talk to specifications**. In natural language. Your system's behavior is defined in `.spec.md` files, and you evolve them through a controlled pipeline where:
+
+*   ✅ Each change is scoped to explicit file boundaries (`context_bounds`).
+*   ✅ Every feature has acceptance criteria validated by tests **before** implementation.
+*   ✅ An antagonistic auditor (*The Censor*) rejects vague or overreaching changes.
+*   ✅ If implementation fails, the system **rolls back automatically**.
+
+> **Axioma is the first step toward a future where complex systems are built by chatting with their specs — safely, incrementally, and without regressions.**
+
+---
+
 ## 🌟 The Vision: Code Slaves vs. Software Engineers
 
 AI-assisted development today suffers from "hyper-activity":
