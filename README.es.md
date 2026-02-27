@@ -46,7 +46,7 @@ Axioma une lo mejor del mundo conversacional interactivo ("Vibe Coding") con el 
 graph TD
     User([Petición del Usuario]) --> A
     
-    subgraph Fase 1: Vibe Coding (Chatbot Interactivo)
+    subgraph "Fase 1: Vibe Coding (Chatbot Interactivo)"
     A[The Archivist] -- MCP --> Repo[(Repositorio)]
     A -.->|Aclarar Ambigüedad| User
     A --> B[The Blueprint]
@@ -56,7 +56,7 @@ graph TD
     
     Spec ===>|Frontera de Aprobación Humana| C
     
-    subgraph Fase 2: Fire and Forget (Flujo Autónomo)
+    subgraph "Fase 2: Fire and Forget (Flujo Autónomo)"
     C{The Censor} -->|Veto| A
     C -->|Aprobado| J[The Justice]
     J --> Tests((Tests))
