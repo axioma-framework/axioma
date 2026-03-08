@@ -44,26 +44,26 @@ Axioma bridges the gap between conversational brainstorming ("Vibe Coding") and 
 
 ```mermaid
 graph TD
-    User([User Request]) --> A
+    User([Petición del Usuario]) --> A
     
-    subgraph Phase 1: Vibe Coding (Interactive Chatbot)
-    A[The Archivist] -- MCP --> Repo[(Repository)]
-    A -.->|Ask & Clarify| User
+    subgraph "Fase 1: Vibe Coding (Chatbot Interactivo)"
+    A[The Archivist] -- MCP --> Repo[(Repositorio)]
+    A -.->|Aclarar Ambigüedad| User
     A --> B[The Blueprint]
     B --> Spec[.spec.md / Ledger]
-    B -.->|Draft & Refine| User
+    B -.->|Refinar Diseño| User
     end
     
-    Spec ===>|Human Approval Boundary| C
+    Spec ===>|Frontera de Aprobación Humana| C
     
-    subgraph Phase 2: Fire and Forget (Autonomous Flow)
+    subgraph "Fase 2: Fire and Forget (Flujo Autónomo)"
     C{The Censor} -->|Veto| A
-    C -->|Approved| J[The Justice]
+    C -->|Aprobado| J[The Justice]
     J --> Tests((Tests))
-    Tests -->|Must Fail 🔴| M
+    Tests -->|Debe Fallar 🔴| M
     M[The Mason] --> Src{src/}
-    Src -->|Tests Pass 🟢| Done([Deployable Code])
-    Src -->|Tests Fail 🔴| M
+    Src -->|Tests Pasan 🟢| Done([Código Desplegable])
+    Src -->|Tests Fallan 🔴| M
     end
 ```
 
