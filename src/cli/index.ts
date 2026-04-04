@@ -8,6 +8,7 @@ import { draftSpec } from "../core/draft-service/index.js";
 import { generateJusticeTests } from "../core/justice-service/index.js";
 import { updateLedgerRow } from "../core/ledger-service/index.js";
 import { implementWithMason } from "../core/mason-service/index.js";
+import { runAxiomaPipeline } from "../core/run-service/index.js";
 import { parseSpec, serializeSpec, validateSpec } from "../core/spec-engine/index.js";
 import { initializeWorkspace } from "../core/workspace/init.js";
 
@@ -48,6 +49,10 @@ export async function runCli(argv: string[], stdout: OutputWriter = process.stdo
 
     if (command === "implement") {
       return await handleImplement(subcommand, stdout, stderr);
+    }
+
+    if (command === "run") {
+      return await handleRun(subcommand, stdout, stderr);
     }
 
     if (command === "status") {
@@ -153,6 +158,25 @@ async function handleImplement(specPathArg: string | undefined, stdout: OutputWr
   return 0;
 }
 
+async function handleRun(specPathArg: string | undefined, stdout: OutputWriter, stderr: OutputWriter): CommandResult {
+  const specPath = ensureArgument(specPathArg, "Missing spec path for `axioma run`.");
+  const result = await runAxiomaPipeline(specPath);
+
+  if (result.finalStatus === "vetoed") {
+    stderr.write(`Pipeline stopped with veto. Steps: ${result.steps.join(" -> ")}\n`);
+    return 1;
+  }
+
+  if (result.finalStatus === "failed") {
+    stderr.write(`Pipeline failed. Steps: ${result.steps.join(" -> ")}\n`);
+    return 1;
+  }
+
+  stdout.write(`Pipeline completed with status ${result.finalStatus}\n`);
+  stdout.write(`Steps: ${result.steps.join(" -> ")}\n`);
+  return 0;
+}
+
 async function handleLedgerTouch(args: string[], stdout: OutputWriter): CommandResult {
   const [specPathArg, agentArg, statusArg, timestampArg, ...noteParts] = args;
   const specPath = ensureArgument(specPathArg, "Missing spec path for `axioma ledger touch`.");
@@ -190,6 +214,7 @@ function printHelp(stream: OutputWriter): void {
   stream.write("  axioma audit <spec>\n");
   stream.write("  axioma testgen <spec>\n");
   stream.write("  axioma implement <spec>\n");
+  stream.write("  axioma run <spec>\n");
   stream.write("  axioma spec validate <spec>\n");
   stream.write("  axioma status <spec>\n");
 }
