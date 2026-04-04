@@ -5,3 +5,4 @@ export * from "./core/workspace/init.js";
 export * from "./core/project-inspector/index.js";
 export * from "./core/draft-service/index.js";
 export * from "./core/censor-service/index.js";
+export * from "./core/justice-service/index.js";

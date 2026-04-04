@@ -246,4 +246,37 @@ describe("cli integration", () => {
     expect(exitCode).toBe(1);
     expect(stderr.toString()).toContain("Missing spec path for `axioma audit`.");
   });
+
+  it("generates red tests from an approved spec", async () => {
+    const fixtureRepo = path.join(repoRoot, "tests/fixtures/repos/ts-vitest-app");
+    const dir = await createTempDir();
+    await import("node:fs/promises").then(async ({ cp, mkdir }) => {
+      await cp(fixtureRepo, dir, { recursive: true });
+      await mkdir(path.join(dir, "docs/specs"), { recursive: true });
+      await writeFile(
+        path.join(dir, "docs/specs/justice-vitest-approved.spec.md"),
+        await readFile(path.join(repoRoot, "tests/fixtures/justice-vitest-approved.spec.md"), "utf8"),
+        "utf8"
+      );
+    });
+
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+    const exitCode = await runCli(["testgen", path.join(dir, "docs/specs/justice-vitest-approved.spec.md")], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(0);
+    expect(stdout.toString()).toContain("Tests generated:");
+    expect(stdout.toString()).toContain("Red output:");
+    expect((await readFile(path.join(dir, "docs/specs/justice-vitest-approved.spec.md"), "utf8"))).toContain("status: testing");
+  });
+
+  it("fails explicitly when testgen is called without a spec path", async () => {
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+
+    const exitCode = await runCli(["testgen"], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(1);
+    expect(stderr.toString()).toContain("Missing spec path for `axioma testgen`.");
+  });
 });

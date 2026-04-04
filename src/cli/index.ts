@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { auditSpecFile } from "../core/censor-service/index.js";
 import { draftSpec } from "../core/draft-service/index.js";
+import { generateJusticeTests } from "../core/justice-service/index.js";
 import { updateLedgerRow } from "../core/ledger-service/index.js";
 import { parseSpec, serializeSpec, validateSpec } from "../core/spec-engine/index.js";
 import { initializeWorkspace } from "../core/workspace/init.js";
@@ -38,6 +39,10 @@ export async function runCli(argv: string[], stdout: OutputWriter = process.stdo
 
     if (command === "audit") {
       return await handleAudit(subcommand, stdout, stderr);
+    }
+
+    if (command === "testgen") {
+      return await handleTestgen(subcommand, stdout, stderr);
     }
 
     if (command === "status") {
@@ -122,6 +127,16 @@ async function handleAudit(specPathArg: string | undefined, stdout: OutputWriter
   return 0;
 }
 
+async function handleTestgen(specPathArg: string | undefined, stdout: OutputWriter, stderr: OutputWriter): CommandResult {
+  const specPath = ensureArgument(specPathArg, "Missing spec path for `axioma testgen`.");
+  const result = await generateJusticeTests({ specPath });
+
+  stdout.write(`Tests generated: ${result.testFilePath}\n`);
+  stdout.write(`Red output:\n${result.output}\n`);
+  stderr.write("");
+  return 0;
+}
+
 async function handleLedgerTouch(args: string[], stdout: OutputWriter): CommandResult {
   const [specPathArg, agentArg, statusArg, timestampArg, ...noteParts] = args;
   const specPath = ensureArgument(specPathArg, "Missing spec path for `axioma ledger touch`.");
@@ -157,6 +172,7 @@ function printHelp(stream: OutputWriter): void {
   stream.write("  axioma init [repo]\n");
   stream.write("  axioma draft <feature> [--repo <path>]\n");
   stream.write("  axioma audit <spec>\n");
+  stream.write("  axioma testgen <spec>\n");
   stream.write("  axioma spec validate <spec>\n");
   stream.write("  axioma status <spec>\n");
 }
