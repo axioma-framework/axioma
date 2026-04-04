@@ -121,7 +121,7 @@ Current scope:
 Until Axioma is published as a package, install it manually from this repository:
 
 ```bash
-git clone https://github.com/axioma-framework/axioma.git
+git clone git@github.com:axioma-framework/axioma.git
 cd axioma
 npm install
 npm run build
@@ -179,7 +179,7 @@ Install and configure Axioma v1 in this repository.
 
 Requirements:
 - Treat the current repository as the target repo where Axioma will be used.
-- Clone or use the Axioma framework from /Users/cenco/Github/galiprandi/axioma.
+- Clone or use the Axioma framework from git@github.com:axioma-framework/axioma.git.
 - Build Axioma if needed.
 - Initialize the target repo for Axioma usage.
 - Verify whether this repo is compatible with the current Axioma v1 assumptions:
