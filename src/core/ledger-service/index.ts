@@ -4,7 +4,7 @@ const STATUS_TRANSITIONS: Record<SpecStatus, SpecStatus[]> = {
   drafting: ["auditing", "approved", "failed", "vetoed"],
   auditing: ["approved", "vetoed", "failed"],
   approved: ["testing", "failed"],
-  testing: ["implementing", "failed"],
+  testing: ["implementing", "done", "failed"],
   implementing: ["done", "failed"],
   done: [],
   failed: [],

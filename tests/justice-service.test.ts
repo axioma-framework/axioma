@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { executeJusticeRunner, generateJusticeTests, renderJusticeTests } from "../src/core/justice-service/index.js";
+import { JUSTICE_MARKER_EXPORT, executeJusticeRunner, generateJusticeTests, renderJusticeTests } from "../src/core/justice-service/index.js";
 
 const repoRoot = process.cwd();
 const tempDirs: string[] = [];
@@ -82,16 +82,20 @@ describe("justice-service", () => {
     const vitestContent = renderJusticeTests(
       "greeting",
       [{ id: "AC-01", text: "Given a case, when it runs, then it fails.", raw: "", checked: false }],
-      "vitest"
+      "vitest",
+      "./greeting.ts"
     );
     const jestContent = renderJusticeTests(
       "auth-service",
       [{ id: "AC-01", text: "Given a case, when it runs, then it fails.", raw: "", checked: false }],
-      "jest"
+      "jest",
+      "../lib/auth-service.ts"
     );
 
     expect(vitestContent).toContain('from "vitest"');
+    expect(vitestContent).toContain(JUSTICE_MARKER_EXPORT);
     expect(jestContent).toContain('require("@jest/globals")');
+    expect(jestContent).toContain(JUSTICE_MARKER_EXPORT);
   });
 
   it("can execute a passing vitest file directly", async () => {

@@ -25,6 +25,8 @@ export interface JusticeResult {
   output: string;
 }
 
+export const JUSTICE_MARKER_EXPORT = "__axiomaJusticeMarkers";
+
 export async function generateJusticeTests(options: GenerateJusticeTestsOptions): Promise<JusticeResult> {
   const specPath = path.resolve(options.specPath);
   const repoPath = path.resolve(options.repoPath ?? path.dirname(path.dirname(path.dirname(specPath))));
@@ -42,7 +44,12 @@ export async function generateJusticeTests(options: GenerateJusticeTestsOptions)
 
   const testFilePath = resolveTestFilePath(repoPath, spec, inspection.testPattern);
   await mkdir(path.dirname(testFilePath), { recursive: true });
-  const testContent = renderJusticeTests(spec.frontmatter.feature ?? "feature", spec.acceptanceCriteria, inspection.testRunner);
+  const testContent = renderJusticeTests(
+    spec.frontmatter.feature ?? "feature",
+    spec.acceptanceCriteria,
+    inspection.testRunner,
+    buildContextImportPath(repoPath, testFilePath, spec.frontmatter.context_bounds[0])
+  );
   await writeFile(testFilePath, testContent, "utf8");
 
   const runResult = await (options.runnerOverride ?? executeJusticeRunner)(inspection.testRunner, repoPath, testFilePath);
@@ -83,7 +90,44 @@ function resolveTestFilePath(repoPath: string, spec: AxiomaSpec, testPattern: st
   return path.join(repoPath, sourceRoot, fileName);
 }
 
-export function renderJusticeTests(featureName: string, criteria: AcceptanceCriterion[], testRunner: "vitest" | "jest"): string {
+export function resolveJusticeTestFilePath(repoPath: string, spec: AxiomaSpec, testPattern: string): string {
+  return resolveTestFilePath(repoPath, spec, testPattern);
+}
+
+function buildContextImportPath(repoPath: string, testFilePath: string, contextBound: string | undefined): string {
+  if (!contextBound) {
+    throw new Error("Justice requires at least one context bound.");
+  }
+
+  const absoluteTarget = path.join(repoPath, contextBound);
+  const relativePath = path.relative(path.dirname(testFilePath), absoluteTarget).replaceAll(path.sep, "/");
+  return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
+}
+
+function buildCriterionAssertion(
+  criterion: AcceptanceCriterion,
+  importPath: string,
+  testRunner: "vitest" | "jest"
+): string {
+  if (testRunner === "vitest") {
+    return `test(${JSON.stringify(`${criterion.id}: ${criterion.text}`)}, async () => {
+  const module = await import(${JSON.stringify(importPath)});
+  expect(module.${JUSTICE_MARKER_EXPORT}?.[${JSON.stringify(criterion.id)}]).toBe(true);
+});`;
+  }
+
+  return `test(${JSON.stringify(`${criterion.id}: ${criterion.text}`)}, () => {
+  const module = require(${JSON.stringify(importPath)});
+  expect(module.${JUSTICE_MARKER_EXPORT}?.[${JSON.stringify(criterion.id)}]).toBe(true);
+});`;
+}
+
+export function renderJusticeTests(
+  featureName: string,
+  criteria: AcceptanceCriterion[],
+  testRunner: "vitest" | "jest",
+  importPath: string
+): string {
   if (criteria.length === 0) {
     throw new Error("Justice cannot generate tests for a spec with no acceptance criteria.");
   }
@@ -93,13 +137,7 @@ export function renderJusticeTests(featureName: string, criteria: AcceptanceCrit
       ? 'import { describe, expect, test } from "vitest";'
       : 'const { describe, test, expect } = require("@jest/globals");';
 
-  const tests = criteria
-    .map(
-      (criterion) => `test(${JSON.stringify(`${criterion.id}: ${criterion.text}`)}, () => {
-  expect.fail(${JSON.stringify(`Red step placeholder for ${featureName} - ${criterion.id}`)});
-});`
-    )
-    .join("\n\n");
+  const tests = criteria.map((criterion) => buildCriterionAssertion(criterion, importPath, testRunner)).join("\n\n");
 
   return `${importLine}
 
@@ -151,13 +189,18 @@ async function runVitest(repoPath: string, testFilePath: string): Promise<{ exit
 async function runJest(repoPath: string, testFilePath: string): Promise<{ exitCode: number; output: string }> {
   const jestEntrypoint = path.join(REPO_ROOT, "node_modules/jest/bin/jest.js");
   const relativeTestPath = path.relative(repoPath, testFilePath);
+  const nodePath = [path.join(REPO_ROOT, "node_modules"), process.env.NODE_PATH].filter(Boolean).join(path.delimiter);
 
   try {
     const result = await execFileAsync(
       process.execPath,
       [jestEntrypoint, "--runTestsByPath", relativeTestPath, "--config", path.join(repoPath, "jest.config.cjs")],
       {
-        cwd: repoPath
+        cwd: repoPath,
+        env: {
+          ...process.env,
+          NODE_PATH: nodePath
+        }
       }
     );
     return {
