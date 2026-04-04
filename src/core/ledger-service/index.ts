@@ -1,7 +1,7 @@
 import type { AxiomaSpec, LedgerRow, SpecStatus } from "../types/spec.js";
 
 const STATUS_TRANSITIONS: Record<SpecStatus, SpecStatus[]> = {
-  drafting: ["auditing", "failed", "vetoed"],
+  drafting: ["auditing", "approved", "failed", "vetoed"],
   auditing: ["approved", "vetoed", "failed"],
   approved: ["testing", "failed"],
   testing: ["implementing", "failed"],

@@ -61,3 +61,8 @@ export interface ProjectInspectionResult {
   sourceRoots: string[];
   candidateFiles: string[];
 }
+
+export interface AuditResult {
+  passed: boolean;
+  reasons: string[];
+}

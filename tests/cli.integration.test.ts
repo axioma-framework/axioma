@@ -206,4 +206,44 @@ describe("cli integration", () => {
     expect(exitCode).toBe(1);
     expect(stderr.toString()).toContain("Missing repo path after `--repo`.");
   });
+
+  it("audits a valid spec and updates it to approved", async () => {
+    const dir = await createTempDir();
+    const specPath = path.join(dir, "audit-pass.spec.md");
+    const source = await readFile(path.join(repoRoot, "tests/fixtures/audit-pass.spec.md"), "utf8");
+    await writeFile(specPath, source, "utf8");
+
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+    const exitCode = await runCli(["audit", specPath], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(0);
+    expect(stdout.toString()).toContain("Audit passed:");
+    expect((await readFile(specPath, "utf8"))).toContain("status: approved");
+  });
+
+  it("audits an invalid spec and returns a veto", async () => {
+    const dir = await createTempDir();
+    const specPath = path.join(dir, "audit-subjective.spec.md");
+    const source = await readFile(path.join(repoRoot, "tests/fixtures/audit-subjective.spec.md"), "utf8");
+    await writeFile(specPath, source, "utf8");
+
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+    const exitCode = await runCli(["audit", specPath], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(1);
+    expect(stderr.toString()).toContain("Audit vetoed:");
+    expect((await readFile(specPath, "utf8"))).toContain("status: vetoed");
+  });
+
+  it("fails explicitly when audit is called without a spec path", async () => {
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+
+    const exitCode = await runCli(["audit"], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(1);
+    expect(stderr.toString()).toContain("Missing spec path for `axioma audit`.");
+  });
 });
