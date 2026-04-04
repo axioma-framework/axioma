@@ -3,6 +3,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { draftSpec } from "../core/draft-service/index.js";
 import { updateLedgerRow } from "../core/ledger-service/index.js";
 import { parseSpec, serializeSpec, validateSpec } from "../core/spec-engine/index.js";
 import { initializeWorkspace } from "../core/workspace/init.js";
@@ -28,6 +29,10 @@ export async function runCli(argv: string[], stdout: OutputWriter = process.stdo
 
     if (command === "spec" && subcommand === "validate") {
       return await handleSpecValidate(rest[0], stdout, stderr);
+    }
+
+    if (command === "draft") {
+      return await handleDraft(subcommand, rest, stdout);
     }
 
     if (command === "status") {
@@ -84,6 +89,21 @@ async function handleStatus(specPathArg: string | undefined, stdout: OutputWrite
   return 0;
 }
 
+async function handleDraft(featureArg: string | undefined, args: string[], stdout: OutputWriter): CommandResult {
+  const featureName = ensureArgument(featureArg, "Missing feature name for `axioma draft`.");
+  const repoIndex = args.findIndex((value) => value === "--repo");
+  const repoPath = repoIndex >= 0 ? ensureArgument(args[repoIndex + 1], "Missing repo path after `--repo`.") : process.cwd();
+  const result = await draftSpec({
+    repoPath,
+    featureName
+  });
+
+  stdout.write(`Draft created: ${result.specPath}\n`);
+  stdout.write(`Test runner: ${result.inspection.testRunner}\n`);
+  stdout.write(`Context bounds: ${result.contextBounds.join(", ")}\n`);
+  return 0;
+}
+
 async function handleLedgerTouch(args: string[], stdout: OutputWriter): CommandResult {
   const [specPathArg, agentArg, statusArg, timestampArg, ...noteParts] = args;
   const specPath = ensureArgument(specPathArg, "Missing spec path for `axioma ledger touch`.");
@@ -117,6 +137,7 @@ function ensureArgument(value: string | undefined, message: string): string {
 function printHelp(stream: OutputWriter): void {
   stream.write("Usage:\n");
   stream.write("  axioma init [repo]\n");
+  stream.write("  axioma draft <feature> [--repo <path>]\n");
   stream.write("  axioma spec validate <spec>\n");
   stream.write("  axioma status <spec>\n");
 }

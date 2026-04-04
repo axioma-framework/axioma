@@ -1,0 +1,8 @@
+{
+  "name": "ts-jest-app",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0"
+  }
+}

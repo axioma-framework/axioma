@@ -1,0 +1,7 @@
+{
+  "name": "ts-unknown-runner",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

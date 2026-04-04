@@ -1,0 +1,8 @@
+{
+  "name": "no-source-roots",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0"
+  }
+}

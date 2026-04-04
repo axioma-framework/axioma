@@ -57,6 +57,17 @@ describe("cli integration", () => {
     expect(stdout.toString()).toContain("Spec valid: add-greeting");
   });
 
+  it("spec validate prints warnings for valid specs with omitted fixtures", async () => {
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+    const exitCode = await runCli(["spec", "validate", path.join(repoRoot, "tests/fixtures/valid-with-warning.spec.md")], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(0);
+    expect(stdout.toString()).toContain("Spec valid: warning-only");
+    expect(stdout.toString()).toContain("Warnings: Spec does not declare a Fixtures section.");
+    expect(stderr.toString()).toBe("");
+  });
+
   it("status reports current spec state", async () => {
     const stdout = new MemoryStream();
     const stderr = new MemoryStream();
@@ -153,5 +164,46 @@ describe("cli integration", () => {
     const spec = parseSpec(raw);
 
     expect(spec.frontmatter.feature).toBe("add-greeting");
+  });
+
+  it("creates a draft spec from an inspected repository", async () => {
+    const fixtureRepo = path.join(repoRoot, "tests/fixtures/repos/ts-vitest-app");
+    const dir = await createTempDir();
+    await import("node:fs/promises").then(({ cp, mkdir }) =>
+      Promise.all([
+        cp(fixtureRepo, dir, { recursive: true }),
+        mkdir(path.join(dir, "docs/specs"), { recursive: true })
+      ])
+    );
+
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+    const exitCode = await runCli(["draft", "greeting", "--repo", dir], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(0);
+    expect(stdout.toString()).toContain("Draft created:");
+    expect(stdout.toString()).toContain("Test runner: vitest");
+    expect(stdout.toString()).toContain("Context bounds: src/greeting.ts");
+    expect(await readFile(path.join(dir, "docs/specs/greeting.spec.md"), "utf8")).toContain('feature: "greeting"');
+  });
+
+  it("fails explicitly when draft is missing a feature name", async () => {
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+
+    const exitCode = await runCli(["draft"], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(1);
+    expect(stderr.toString()).toContain("Missing feature name for `axioma draft`.");
+  });
+
+  it("fails explicitly when draft --repo has no value", async () => {
+    const stdout = new MemoryStream();
+    const stderr = new MemoryStream();
+
+    const exitCode = await runCli(["draft", "greeting", "--repo"], stdout as never, stderr as never);
+
+    expect(exitCode).toBe(1);
+    expect(stderr.toString()).toContain("Missing repo path after `--repo`.");
   });
 });

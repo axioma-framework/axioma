@@ -51,3 +51,13 @@ export interface ValidationResult {
   errors: string[];
   warnings: string[];
 }
+
+export interface ProjectInspectionResult {
+  repoPath: string;
+  language: "typescript";
+  packageManager: "npm" | "pnpm" | "yarn" | "unknown";
+  testRunner: "vitest" | "jest" | "unknown";
+  testPattern: string;
+  sourceRoots: string[];
+  candidateFiles: string[];
+}
