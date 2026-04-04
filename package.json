@@ -1,0 +1,30 @@
+{
+  "name": "axioma",
+  "version": "0.1.0",
+  "description": "Spec-driven AI engineering CLI.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "axioma": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
