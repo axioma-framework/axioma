@@ -92,6 +92,110 @@ Axioma está diseñado para ser agnóstico pero potenciado por un core de alto r
 
 ---
 
+## 🚀 v1 actual
+
+Este repositorio ya contiene una primera versión funcional de Axioma como CLI local enfocada en **Node + TypeScript + Vitest/Jest**.
+
+Comandos disponibles hoy:
+
+*   `axioma init [repo]`
+*   `axioma draft <feature> [--repo <path>]`
+*   `axioma audit <spec>`
+*   `axioma testgen <spec>`
+*   `axioma implement <spec>`
+*   `axioma run <spec>`
+*   `axioma status <spec>`
+*   `axioma spec validate <spec>`
+
+Alcance actual:
+
+*   La spec es la fuente de verdad y el estado vive en el ledger dentro del `.spec.md`.
+*   El pipeline puede ejecutarse de punta a punta sobre repos TypeScript soportados.
+*   Justice y Mason usan hoy un **bucle mínimo de contrato** para garantizar un ciclo rojo/verde determinista dentro de `context_bounds`.
+*   Es una v1 usable, pero todavía no es un paquete publicado ni una solución multi-lenguaje.
+
+---
+
+## 📦 Instalación manual
+
+Hasta que Axioma se publique como paquete, podés instalarlo manualmente desde este repositorio:
+
+```bash
+git clone https://github.com/axioma-framework/axioma.git
+cd axioma
+npm install
+npm run build
+```
+
+Después podés usar la CLI de una de estas formas:
+
+```bash
+node dist/cli/index.js --help
+node dist/cli/index.js init /ruta/al/repo-destino
+node dist/cli/index.js draft greeting --repo /ruta/al/repo-destino
+```
+
+Si querés un comando local durante la experimentación:
+
+```bash
+npm link
+axioma --help
+```
+
+---
+
+## ▶️ Uso manual
+
+Flujo mínimo de punta a punta sobre un repo soportado:
+
+```bash
+axioma init /ruta/al/repo-destino
+axioma draft greeting --repo /ruta/al/repo-destino
+axioma audit /ruta/al/repo-destino/docs/specs/greeting.spec.md
+axioma testgen /ruta/al/repo-destino/docs/specs/greeting.spec.md
+axioma implement /ruta/al/repo-destino/docs/specs/greeting.spec.md
+```
+
+O podés correr el flujo autónomo desde una spec en borrador o aprobada:
+
+```bash
+axioma run /ruta/al/repo-destino/docs/specs/greeting.spec.md
+```
+
+Forma recomendada del repo destino en esta v1:
+
+*   `package.json` presente
+*   código TypeScript bajo `src/` o `lib/`
+*   `vitest` o `jest` ya presente en el contrato del repo
+
+---
+
+## 🤖 Prompt para instalar Axioma con otro agente
+
+Si querés que otro agente instale y configure Axioma en un repositorio donde planeás usarlo, podés darle este prompt:
+
+```text
+Instala y configura Axioma v1 en este repositorio.
+
+Requisitos:
+- Tratá el repositorio actual como el repo destino donde se va a usar Axioma.
+- Cloná o usá el framework Axioma desde /Users/cenco/Github/galiprandi/axioma.
+- Compilá Axioma si hace falta.
+- Inicializá el repo destino para usar Axioma.
+- Verificá si este repo es compatible con los supuestos actuales de Axioma v1:
+  - existe package.json
+  - el código fuente vive en src/ o lib/
+  - vitest o jest está disponible
+- No publiques nada ni modifiques código no relacionado.
+- Al final, reportá:
+  - cómo quedó instalado Axioma
+  - qué comando local hay que usar para invocarlo
+  - si el repo es compatible ahora mismo
+  - el primer comando exacto para redactar una spec en este repo
+```
+
+---
+
 ## 📂 Estructura del Proyecto
 
 Vista general de la estructura:

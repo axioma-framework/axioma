@@ -92,6 +92,110 @@ Axioma is designed to be agnostic but powered by a high-performance core:
 
 ---
 
+## 🚀 Current v1
+
+This repository now contains a working local CLI for a first end-to-end Axioma v1 focused on **Node + TypeScript + Vitest/Jest**.
+
+Current commands:
+
+*   `axioma init [repo]`
+*   `axioma draft <feature> [--repo <path>]`
+*   `axioma audit <spec>`
+*   `axioma testgen <spec>`
+*   `axioma implement <spec>`
+*   `axioma run <spec>`
+*   `axioma status <spec>`
+*   `axioma spec validate <spec>`
+
+Current scope:
+
+*   Specs are the source of truth and ledger state is stored in the `.spec.md`.
+*   The pipeline can run end-to-end on supported TypeScript repositories.
+*   Justice and Mason currently use a **minimal contract loop** to guarantee a deterministic red/green cycle inside `context_bounds`.
+*   This is a usable v1, but not yet a published package or a general multi-language solution.
+
+---
+
+## 📦 Manual Installation
+
+Until Axioma is published as a package, install it manually from this repository:
+
+```bash
+git clone https://github.com/axioma-framework/axioma.git
+cd axioma
+npm install
+npm run build
+```
+
+You can then use the CLI in one of these ways:
+
+```bash
+node dist/cli/index.js --help
+node dist/cli/index.js init /path/to/target-repo
+node dist/cli/index.js draft greeting --repo /path/to/target-repo
+```
+
+If you want a local command during experimentation:
+
+```bash
+npm link
+axioma --help
+```
+
+---
+
+## ▶️ Manual Usage
+
+Minimal end-to-end flow on a supported target repo:
+
+```bash
+axioma init /path/to/target-repo
+axioma draft greeting --repo /path/to/target-repo
+axioma audit /path/to/target-repo/docs/specs/greeting.spec.md
+axioma testgen /path/to/target-repo/docs/specs/greeting.spec.md
+axioma implement /path/to/target-repo/docs/specs/greeting.spec.md
+```
+
+Or run the autonomous flow from an approved or draft spec:
+
+```bash
+axioma run /path/to/target-repo/docs/specs/greeting.spec.md
+```
+
+Recommended target repo shape for v1:
+
+*   `package.json` present
+*   TypeScript source rooted in `src/` or `lib/`
+*   `vitest` or `jest` already present in the target repo contract
+
+---
+
+## 🤖 Agent Install Prompt
+
+If you want another coding agent to install and configure Axioma in a repository where you plan to use it, you can give it this prompt:
+
+```text
+Install and configure Axioma v1 in this repository.
+
+Requirements:
+- Treat the current repository as the target repo where Axioma will be used.
+- Clone or use the Axioma framework from /Users/cenco/Github/galiprandi/axioma.
+- Build Axioma if needed.
+- Initialize the target repo for Axioma usage.
+- Verify whether this repo is compatible with the current Axioma v1 assumptions:
+  - package.json exists
+  - source code lives in src/ or lib/
+  - vitest or jest is available
+- Do not publish anything or modify unrelated code.
+- At the end, report:
+  - how Axioma was installed
+  - which command should be used to invoke it locally
+  - whether the repo is compatible right now
+  - the exact first command to draft a spec in this repo
+```
+
+---
+
 ## 📂 Project Structure
 
 Project structure overview:
